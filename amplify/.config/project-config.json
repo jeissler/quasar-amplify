@@ -1,0 +1,17 @@
+{
+  "projectName": "quasaramp",
+  "version": "3.0",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "vue",
+    "config": {
+      "SourceDir": "src",
+      "DistributionDir": "dist/spa",
+      "BuildCommand": "npm run-script build",
+      "StartCommand": "npm run-script dev"
+    }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
+}
