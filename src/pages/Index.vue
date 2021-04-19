@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import { API, Auth } from 'aws-amplify';
+import { API } from 'aws-amplify';
 import { createTodo, updateTodo, deleteTodo } from '../graphql/mutations';
 import { listTodos } from '../graphql/queries';
 import {
@@ -193,6 +193,7 @@ export default {
             listTodos: { items }
           }
         } = await API.graphql({
+          // authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: listTodos
         });
         this.tasks = items;
@@ -202,7 +203,7 @@ export default {
     },
     async subscribe() {
       try {
-        const { username } = await Auth.currentAuthenticatedUser();
+        // const { username } = await Auth.currentAuthenticatedUser();
 
         API.graphql({
           query: onCreateTodo,
@@ -217,7 +218,7 @@ export default {
 
         API.graphql({
           query: onUpdateTodo,
-          variables: { owner: username }
+          // variables: { owner: username }
         }).subscribe({
           next: (eventData) => {
             const task = eventData.value.data.onUpdateTodo;
@@ -227,7 +228,7 @@ export default {
 
         API.graphql({
           query: onDeleteTodo,
-          variables: { owner: username }
+          // variables: { owner: username }
         }).subscribe({
           next: (eventData) => {
             const task = eventData.value.data.onDeleteTodo;
@@ -241,12 +242,12 @@ export default {
         this.error = err.message || err;
       }
 
-      this.notify({ error: this.error, msg: this.error });
+      this.notify({ error: this.error, msg: this.error || 'Tracking updates' });
     },
     async createTask() {
       try {
         await API.graphql({
-          authMode: 'AMAZON_COGNITO_USER_POOLS',
+          // authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: createTodo,
           variables: { input: { ...this.newTask, ...{ status: 'open' } } }
         });
@@ -260,7 +261,7 @@ export default {
     async updateTask(id, status = 'done') {
       try {
         await API.graphql({
-          authMode: 'AMAZON_COGNITO_USER_POOLS',
+          // authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: updateTodo,
           variables: { input: { id, status } }
         });
@@ -278,7 +279,7 @@ export default {
     async deleteTask(id, _version) {
       try {
         await API.graphql({
-          authMode: 'AMAZON_COGNITO_USER_POOLS',
+          // authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: deleteTodo,
           variables: { input: { id, _version } }
         });
