@@ -14,12 +14,8 @@ export const createTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -36,12 +32,8 @@ export const updateTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -58,12 +50,8 @@ export const deleteTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;

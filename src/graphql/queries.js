@@ -11,12 +11,8 @@ export const getTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -35,48 +31,10 @@ export const listTodos = /* GraphQL */ `
         status
         link
         description
-        _version
-        _deleted
-        _lastChangedAt
         createdAt
         updatedAt
-        owner
       }
       nextToken
-      startedAt
-    }
-  }
-`;
-export const syncTodos = /* GraphQL */ `
-  query SyncTodos(
-    $filter: ModelTodoFilterInput
-    $limit: Int
-    $nextToken: String
-    $lastSync: AWSTimestamp
-  ) {
-    syncTodos(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      lastSync: $lastSync
-    ) {
-      items {
-        id
-        category
-        name
-        title
-        status
-        link
-        description
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-        owner
-      }
-      nextToken
-      startedAt
     }
   }
 `;

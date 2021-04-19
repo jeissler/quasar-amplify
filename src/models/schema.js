@@ -75,12 +75,6 @@ export const schema = {
                                     "delete",
                                     "read"
                                 ]
-                            },
-                            {
-                                "allow": "public",
-                                "operations": [
-                                    "read"
-                                ]
                             }
                         ]
                     }
@@ -90,5 +84,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "d5d8055c2de491775f0adc65f67ca357"
+    "version": "a9d161208816ada7d8a0c85c23dd82f3"
 };

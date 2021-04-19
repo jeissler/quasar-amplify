@@ -15,7 +15,8 @@
     "@aws-amplify/ui-components": "^0.10.2",
     "@quasar/extras": "^1.0.0",
     "aws-amplify": "^3.3.16",
-    "axios": "^0.18.1",
+    "aws-appsync": "^4.0.3",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "quasar": "^1.0.0"
   },

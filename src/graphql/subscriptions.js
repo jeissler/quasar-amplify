@@ -2,8 +2,8 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateTodo = /* GraphQL */ `
-  subscription OnCreateTodo($owner: String) {
-    onCreateTodo(owner: $owner) {
+  subscription OnCreateTodo {
+    onCreateTodo {
       id
       category
       name
@@ -11,18 +11,14 @@ export const onCreateTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
 export const onUpdateTodo = /* GraphQL */ `
-  subscription OnUpdateTodo($owner: String) {
-    onUpdateTodo(owner: $owner) {
+  subscription OnUpdateTodo {
+    onUpdateTodo {
       id
       category
       name
@@ -30,18 +26,14 @@ export const onUpdateTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
 export const onDeleteTodo = /* GraphQL */ `
-  subscription OnDeleteTodo($owner: String) {
-    onDeleteTodo(owner: $owner) {
+  subscription OnDeleteTodo {
+    onDeleteTodo {
       id
       category
       name
@@ -49,12 +41,8 @@ export const onDeleteTodo = /* GraphQL */ `
       status
       link
       description
-      _version
-      _deleted
-      _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;

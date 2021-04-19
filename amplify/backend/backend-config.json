@@ -8,24 +8,17 @@
           "defaultAuthentication": {
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
-              "apiKeyExpirationDays": 7,
-              "description": "todo-demo"
+              "apiKeyExpirationDays": 30,
+              "description": "quasar-amp"
             }
           },
-          "additionalAuthenticationProviders": [
-            {
-              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-              "userPoolConfig": {
-                "userPoolId": "authquasaramp7570fc0d"
-              }
-            }
-          ]
+          "additionalAuthenticationProviders": []
         }
       }
     }
   },
   "auth": {
-    "quasaramp7570fc0d": {
+    "quasaramp980a7528": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],

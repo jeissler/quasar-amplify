@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "quasaramp7570fc0d_identitypool_7570fc0d",
+    "identityPoolName": "quasaramp980a7528_identitypool_980a7528",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "quasar7570fc0d",
-    "userPoolName": "quasaramp7570fc0d_userpool_7570fc0d",
+    "resourceNameTruncated": "quasar980a7528",
+    "userPoolName": "quasaramp980a7528_userpool_980a7528",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -20,7 +20,7 @@
     "requiredAttributes": [
         "email"
     ],
-    "userpoolClientGenerateSecret": true,
+    "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
         "email"
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "quasar7570fc0d_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "quasar980a7528_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "7570fc0d",
-    "resourceName": "quasaramp7570fc0d",
+    "sharedId": "980a7528",
+    "resourceName": "quasaramp980a7528",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
