@@ -183,7 +183,7 @@ export default {
   },
   created() {
     this.getTasks();
-    this.subscribe();
+    // this.subscribe();
   },
   methods: {
     /* async subscribe() {
