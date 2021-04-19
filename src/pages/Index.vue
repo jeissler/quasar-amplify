@@ -152,11 +152,11 @@
 import { API } from 'aws-amplify';
 import { createTodo, updateTodo, deleteTodo } from '../graphql/mutations';
 import { listTodos } from '../graphql/queries';
-import {
-  onCreateTodo,
-  onUpdateTodo,
-  onDeleteTodo
-} from '../graphql/subscriptions';
+// import {
+//   onCreateTodo,
+//   onUpdateTodo,
+//   onDeleteTodo
+// } from '../graphql/subscriptions';
 
 export default {
   name: 'PageIndex',
@@ -186,6 +186,44 @@ export default {
     this.subscribe();
   },
   methods: {
+    /* async subscribe() {
+      try {
+        const { username } = await Auth.currentAuthenticatedUser();
+
+        API.graphql(
+          graphqlOperation(onCreateTodo, { owner: username })
+        ).subscribe({
+          next: (eventData) => {
+            const task = eventData.value.data.onCreateTodo;
+            this.addTask(task);
+          }
+        });
+
+        API.graphql({
+          query: onUpdateTodo,
+          variables: { owner: username }
+        }).subscribe({
+          next: (eventData) => {
+            const task = eventData.value.data.onUpdateTodo;
+            this.updateStatus(task);
+          }
+        });
+
+        API.graphql({
+          query: onDeleteTodo,
+          variables: { owner: username }
+        }).subscribe({
+          next: (eventData) => {
+            const task = eventData.value.data.onDeleteTodo;
+            this.removeTask(task);
+          }
+        });
+      } catch (err) {
+        this.error = err.message || err;
+      }
+
+      this.notify({ error: this.error, msg: this.error ? 'Subscription error' : 'Tracking updates' });
+    }, */
     async getTasks() {
       try {
         const {
@@ -193,7 +231,7 @@ export default {
             listTodos: { items }
           }
         } = await API.graphql({
-          // authMode: 'AMAZON_COGNITO_USER_POOLS',
+          authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: listTodos
         });
         this.tasks = items;
@@ -201,56 +239,14 @@ export default {
         this.error = err.message;
       }
     },
-    async subscribe() {
-      try {
-        // const { username } = await Auth.currentAuthenticatedUser();
-
-        API.graphql({
-          query: onCreateTodo,
-          // variables: { owner: username }
-        }).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onCreateTodo;
-            if (this.tasks.some((item) => item.id === task.id)) return;
-            this.tasks = [...this.tasks, task];
-          }
-        });
-
-        API.graphql({
-          query: onUpdateTodo,
-          // variables: { owner: username }
-        }).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onUpdateTodo;
-            this.tasks.find((item) => item.id === task.id).status = task.status;
-          }
-        });
-
-        API.graphql({
-          query: onDeleteTodo,
-          // variables: { owner: username }
-        }).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onDeleteTodo;
-            this.tasks.splice(
-              this.tasks.findIndex((item) => item.id === task.id),
-              1
-            );
-          }
-        });
-      } catch (err) {
-        this.error = err.message || err;
-      }
-
-      this.notify({ error: this.error, msg: this.error || 'Tracking updates' });
-    },
     async createTask() {
       try {
-        await API.graphql({
-          // authMode: 'AMAZON_COGNITO_USER_POOLS',
+        const { data } = await API.graphql({
+          authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: createTodo,
           variables: { input: { ...this.newTask, ...{ status: 'open' } } }
         });
+        this.updateLocalState(data.createTodo, 'create');
         this.resetForm();
       } catch (err) {
         this.error = err;
@@ -260,11 +256,12 @@ export default {
     },
     async updateTask(id, status = 'done') {
       try {
-        await API.graphql({
-          // authMode: 'AMAZON_COGNITO_USER_POOLS',
+        const { data } = await API.graphql({
+          authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: updateTodo,
           variables: { input: { id, status } }
         });
+        this.updateLocalState(data.updateTodo, 'update');
       } catch (err) {
         this.error = err.message;
       }
@@ -278,11 +275,12 @@ export default {
     },
     async deleteTask(id, _version) {
       try {
-        await API.graphql({
-          // authMode: 'AMAZON_COGNITO_USER_POOLS',
+        const { data } = await API.graphql({
+          authMode: 'AMAZON_COGNITO_USER_POOLS',
           query: deleteTodo,
           variables: { input: { id, _version } }
         });
+        this.updateLocalState(data.removeTask, 'delete');
       } catch (err) {
         this.error = err.message;
       }
@@ -292,6 +290,20 @@ export default {
         msg: this.error ? 'Could not delete task' : 'Task deleted'
       });
     },
+    updateLocalState(task, op) {
+      switch (op) {
+        case 'update':
+          this.tasks.find((item) => item.id === task.id).status = task.status;
+          break;
+        case 'delete':
+          this.tasks.splice(this.tasks.findIndex((item) => item.id === task.id), 1);
+          break;
+        default:
+          if (this.tasks.some((item) => item.id === task.id)) return;
+          this.tasks = [...this.tasks, task];
+      }
+    },
+    // static methods
     notify({ error, msg }) {
       if (error) {
         this.$q.notify({
