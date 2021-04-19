@@ -1,26 +1,2 @@
-# Quasar App (quasar-amp)
-
-A Quasar Framework app
-
-## Install the dependencies
-```bash
-npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-### Lint the files
-```bash
-npm run lint
-```
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+# WIP POC Vue/Quasar + AWS Amplify
+Work in progress quasar proof-of-concept using AWS Amplify auth, api, etc. for full-stack CRUD applications 
