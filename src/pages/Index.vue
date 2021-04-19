@@ -280,7 +280,7 @@ export default {
           query: deleteTodo,
           variables: { input: { id, _version } }
         });
-        this.updateLocalState(data.removeTask, 'delete');
+        this.updateLocalState(data.deleteTodo, 'delete');
       } catch (err) {
         this.error = err.message;
       }
