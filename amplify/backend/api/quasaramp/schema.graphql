@@ -1,5 +1,6 @@
 type Todo 
-@model {
+@model
+@auth(rules: [{ allow: owner }]) {
   id: ID!
   category: String!
   name: String!
