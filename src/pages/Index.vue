@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-py-xl">
-    <q-list bordered class="rounded-borders q-mb-lg q-pb-md">
+    <q-list bordered class="rounded-borders q-ma-lg q-pb-md">
       <q-item-label header>Active Panels</q-item-label>
 
       <template
@@ -59,7 +59,7 @@
       </template>
     </q-list>
 
-    <q-list bordered class="rounded-borders q-mb-xl" style="background:#ececec;">
+    <q-list bordered class="rounded-borders q-ma-lg" style="background:#ececec;">
       <q-item-label header>Disabled Panels</q-item-label>
 
       <template
@@ -175,8 +175,7 @@ export default {
       PanelTemp: {
         category: '',
         title: '',
-        description: '',
-        dataSource: 0
+        description: ''
       },
       newPanel: {},
       panels: [],

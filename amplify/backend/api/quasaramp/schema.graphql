@@ -1,11 +1,30 @@
-type Todo 
+type Dashboard
 @model
 @auth(rules: [{ allow: owner }]) {
   id: ID!
+  title: String!
+  # panelID: ID
+  # panels: Panel @connection(keyName: 'byDashboard', fields: ['panelID'])
+}
+
+type Panel
+@model
+@auth(rules: [{ allow: owner }]) {
+  # @key(name: 'byDashboard', fields: ['dashboardID'])
+  id: ID!
   category: String!
-  name: String!
-  title: String
-  status: String
-  link: String
+  title: String!
+  # active, disabled, deleted
+  status: String!
   description: String
+  # dashboardID: ID
+  # dataID: ID
+  # dataSource: DataSource @connection(fields: ['dataID'])
+}
+
+type DataSource
+@model
+@auth(rules: [{ allow: owner }]) {
+  id: ID!
+  payload: String!
 }
