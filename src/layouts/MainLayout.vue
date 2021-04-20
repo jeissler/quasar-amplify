@@ -1,13 +1,23 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh LpR fff">
     <MainHeader>
       <q-btn
         flat
         dense
         round
+        slot="left"
         icon="ti-menu"
-        aria-label="Menu"
+        aria-label="Main Menu"
         @click="leftDrawerOpen = !leftDrawerOpen"
+      />
+      <q-btn
+        flat
+        dense
+        round
+        slot="right"
+        icon="ti-settings"
+        aria-label="Context Menu"
+        @click="rightDrawerOpen = !rightDrawerOpen"
       />
     </MainHeader>
 
@@ -29,6 +39,23 @@
       </q-list>
     </q-drawer>
 
+    <q-drawer
+      show-if-above
+      v-model="rightDrawerOpen"
+      side="right"
+      behavior="mobile"
+      bordered
+    >
+      <q-btn
+        flat
+        dense
+        round
+        icon="ti-close"
+        aria-label="Close Context Menu"
+        @click="rightDrawerOpen = !rightDrawerOpen"
+      />
+    </q-drawer>
+
     <q-page-container>
       <amplify-authenticator>
         <router-view />
@@ -43,46 +70,28 @@ import EssentialLink from 'components/EssentialLink.vue';
 
 const linksData = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'ti-files',
-    link: 'https://quasar.dev'
+    title: 'Dashboards',
+    caption: 'Board Settings',
+    icon: 'ti-dashboard',
+    link: '/'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'ti-settings',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'ti-comments',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
+    title: 'Panels',
+    caption: 'Panel Configurations',
     icon: 'ti-server',
-    link: 'https://forum.quasar.dev'
+    link: '/'
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'ti-na',
-    link: 'https://twitter.quasar.dev'
+    title: 'Data Sources',
+    caption: 'Source Settings',
+    icon: 'ti-zip',
+    link: '/'
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'ti-na',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
+    title: 'Charts & Graphs',
+    caption: 'Custom Configurations',
     icon: 'ti-bar-chart',
-    link: 'https://awesome.quasar.dev'
+    link: '/'
   }
 ];
 
@@ -95,6 +104,7 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
+      rightDrawerOpen: false,
       essentialLinks: linksData
     };
   }
