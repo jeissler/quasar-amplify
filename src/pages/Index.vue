@@ -1,39 +1,10 @@
 <template>
-  <q-page class="q-py-xl" style="max-width: 800px; margin: 0 auto;">
-    <q-form
-      ref="form"
-      @submit="createTask"
-      @reset="resetForm"
-      class="q-gutter-md q-mb-xl"
-    >
-      <q-input
-        v-for="(val, key, i) of taskTemp"
-        :key="i"
-        filled
-        v-model="newTask[key]"
-        :label="`Task ${key}`"
-        :hint="`Detailed ${key}`"
-        lazy-rules
-        :rules="[val => (val && val.length > 0) || `Please add a ${key}`]"
-      />
-
-      <div>
-        <q-btn label="Add" type="submit" color="primary" />
-        <q-btn
-          label="Reset"
-          type="reset"
-          color="primary"
-          flat
-          class="q-ml-sm"
-        />
-      </div>
-    </q-form>
-
+  <q-page class="q-py-xl">
     <q-list bordered class="rounded-borders q-mb-lg q-pb-md">
-      <q-item-label header>Current Tasks</q-item-label>
+      <q-item-label header>Active Panels</q-item-label>
 
       <template
-        v-for="({ id, _version, name, category, title, description }, i) in openTasks"
+        v-for="({ id, _version, name, category, title, description }, i) in activePanels"
       >
         <q-item :key="name">
           <q-item-section avatar top>
@@ -69,7 +40,7 @@
                 dense
                 round
                 icon="ti-na"
-                @click="deleteTask(id, _version)"
+                @click="deletePanel(id, _version)"
               />
               <q-btn
                 class="gt-xs"
@@ -78,21 +49,21 @@
                 dense
                 round
                 icon="ti-check"
-                @click="updateTask(id)"
+                @click="updatePanel(id)"
               />
             </div>
           </q-item-section>
         </q-item>
 
-        <q-separator spaced :key="i" v-if="openTasks.length - 1 !== i" />
+        <q-separator spaced :key="i" v-if="activePanels.length - 1 !== i" />
       </template>
     </q-list>
 
-    <q-list bordered class="rounded-borders" style="background:#ececec;">
-      <q-item-label header>Closed Tasks</q-item-label>
+    <q-list bordered class="rounded-borders q-mb-xl" style="background:#ececec;">
+      <q-item-label header>Disabled Panels</q-item-label>
 
       <template
-        v-for="({ id, _version, name, category, title, description }, i) in closedTasks"
+        v-for="({ id, _version, name, category, title, description }, i) in disabledPanels"
       >
         <q-item :key="name">
           <q-item-section avatar top>
@@ -128,7 +99,7 @@
                 dense
                 round
                 icon="ti-na"
-                @click="deleteTask(id, _version)"
+                @click="deletePanel(id, _version)"
               />
               <q-btn
                 size="12px"
@@ -136,132 +107,133 @@
                 dense
                 round
                 icon="ti-share-alt"
-                @click="updateTask(id, 'open')"
+                @click="updatePanel(id, 'open')"
               />
             </div>
           </q-item-section>
         </q-item>
 
-        <q-separator spaced :key="i" v-if="closedTasks.length - 1 !== i" />
+        <q-separator spaced :key="i" v-if="disabledPanels.length - 1 !== i" />
       </template>
     </q-list>
+
+    <q-separator class="q-my-xl" />
+
+    <section class="q-mb-lg" style="max-width: 800px; margin: 0 auto;">
+      <q-btn
+        flat
+        dense
+        round
+        :icon="editorOpen ? 'ti-close' : 'ti-plus'"
+        aria-label="Close Panel Editor"
+        @click="editorOpen = !editorOpen"
+      />
+      <p v-if="!editorOpen">Add Panel</p>
+
+      <q-form
+        v-if="editorOpen"
+        ref="form"
+        @submit="createPanel"
+        @reset="resetForm"
+        class="q-gutter-md"
+      >
+        <q-input
+          v-for="(val, key, i) of PanelTemp"
+          :key="i"
+          filled
+          v-model="newPanel[key]"
+          :label="`Panel ${key}`"
+          :hint="`Detailed ${key}`"
+          lazy-rules
+          :rules="[val => (val && val.length > 0) || `Please add a ${key}`]"
+        />
+
+        <div>
+          <q-btn label="Add" type="submit" color="primary" />
+          <q-btn
+            label="Reset"
+            type="reset"
+            color="primary"
+            flat
+            class="q-ml-sm"
+          />
+        </div>
+      </q-form>
+    </section>
   </q-page>
 </template>
 
 <script>
 import { API } from 'aws-amplify';
-import { createTodo, updateTodo, deleteTodo } from '../graphql/mutations';
-import { listTodos } from '../graphql/queries';
-// import {
-//   onCreateTodo,
-//   onUpdateTodo,
-//   onDeleteTodo
-// } from '../graphql/subscriptions';
+import { createPanel, updatePanel, deletePanel } from '../graphql/mutations';
+import { listPanels } from '../graphql/queries';
 
 export default {
   name: 'PageIndex',
   data() {
     return {
-      taskTemp: {
+      PanelTemp: {
         category: '',
-        name: '',
         title: '',
-        description: ''
+        description: '',
+        dataSource: 0
       },
-      newTask: {},
-      tasks: [],
-      error: null
+      newPanel: {},
+      panels: [],
+      error: null,
+      editorOpen: true
     };
   },
+  created() {
+    this.getPanels();
+  },
   computed: {
-    openTasks() {
-      return this.tasks.filter((task) => task.status !== 'done');
+    activePanels() {
+      return this.panels.filter((panel) => panel.status !== 'done');
     },
-    closedTasks() {
-      return this.tasks.filter((task) => task.status === 'done');
+    disabledPanels() {
+      return this.panels.filter((panel) => panel.status === 'done');
     }
   },
-  created() {
-    this.getTasks();
-    // this.subscribe();
-  },
   methods: {
-    /* async subscribe() {
-      try {
-        const { username } = await Auth.currentAuthenticatedUser();
-
-        API.graphql(
-          graphqlOperation(onCreateTodo, { owner: username })
-        ).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onCreateTodo;
-            this.addTask(task);
-          }
-        });
-
-        API.graphql({
-          query: onUpdateTodo,
-          variables: { owner: username }
-        }).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onUpdateTodo;
-            this.updateStatus(task);
-          }
-        });
-
-        API.graphql({
-          query: onDeleteTodo,
-          variables: { owner: username }
-        }).subscribe({
-          next: (eventData) => {
-            const task = eventData.value.data.onDeleteTodo;
-            this.removeTask(task);
-          }
-        });
-      } catch (err) {
-        this.error = err.message || err;
-      }
-
-      this.notify({ error: this.error, msg: this.error ? 'Subscription error' : 'Tracking updates' });
-    }, */
-    async getTasks() {
+    async getPanels() {
       try {
         const {
           data: {
-            listTodos: { items }
+            listPanels: { items }
           }
         } = await API.graphql({
           authMode: 'AMAZON_COGNITO_USER_POOLS',
-          query: listTodos
+          query: listPanels
         });
-        this.tasks = items;
+        this.panels = items;
       } catch (err) {
         this.error = err.message;
       }
     },
-    async createTask() {
+    async createPanel() {
       try {
         const { data } = await API.graphql({
           authMode: 'AMAZON_COGNITO_USER_POOLS',
-          query: createTodo,
-          variables: { input: { ...this.newTask, ...{ status: 'open' } } }
+          query: createPanel,
+          variables: { input: { ...this.newPanel, ...{ status: 'open' } } }
         });
-        this.updateLocalState(data.createTodo, 'create');
+        this.updateLocalState(data.createPanel, 'create');
         this.resetForm();
       } catch (err) {
         this.error = err;
       }
 
-      this.notify({ error: this.error, msg: this.error || 'Task created' });
+      this.notify({ error: this.error, msg: this.error || 'Panel created' });
     },
-    async updateTask(id, status = 'done') {
+    async updatePanel(id, status = 'done') {
       try {
         const { data } = await API.graphql({
           authMode: 'AMAZON_COGNITO_USER_POOLS',
-          query: updateTodo,
+          query: updatePanel,
           variables: { input: { id, status } }
         });
-        this.updateLocalState(data.updateTodo, 'update');
+        this.updateLocalState(data.updatePanel, 'update');
       } catch (err) {
         this.error = err.message;
       }
@@ -270,37 +242,37 @@ export default {
         error: this.error,
         msg: this.error
           ? 'Could not update status'
-          : `Task status updated to ${status}`
+          : `Panel status updated to ${status}`
       });
     },
-    async deleteTask(id, _version) {
+    async deletePanel(id, _version) {
       try {
         const { data } = await API.graphql({
           authMode: 'AMAZON_COGNITO_USER_POOLS',
-          query: deleteTodo,
+          query: deletePanel,
           variables: { input: { id, _version } }
         });
-        this.updateLocalState(data.deleteTodo, 'delete');
+        this.updateLocalState(data.deletePanel, 'delete');
       } catch (err) {
         this.error = err.message;
       }
 
       this.notify({
         error: this.error,
-        msg: this.error ? 'Could not delete task' : 'Task deleted'
+        msg: this.error ? 'Could not delete panel' : 'Panel deleted'
       });
     },
-    updateLocalState(task, op) {
+    updateLocalState(panel, op) {
       switch (op) {
         case 'update':
-          this.tasks.find((item) => item.id === task.id).status = task.status;
+          this.panels.find((item) => item.id === panel.id).status = panel.status;
           break;
         case 'delete':
-          this.tasks.splice(this.tasks.findIndex((item) => item.id === task.id), 1);
+          this.panels.splice(this.panels.findIndex((item) => item.id === panel.id), 1);
           break;
-        default:
-          if (this.tasks.some((item) => item.id === task.id)) return;
-          this.tasks = [...this.tasks, task];
+        default: // create
+          if (this.panels.some((item) => item.id === panel.id)) return;
+          this.panels = [...this.panels, panel];
       }
     },
     // static methods
@@ -323,7 +295,7 @@ export default {
       this.error = null;
     },
     resetForm() {
-      this.newTask = {};
+      this.newPanel = {};
       this.$refs.form.resetValidation();
     }
   }
